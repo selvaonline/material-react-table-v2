@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import IosShareIcon from '@mui/icons-material/IosShare';
 import { MaterialReactTable } from 'material-react-table';
 
 const UsersTableComponent = ({
@@ -52,21 +52,10 @@ const UsersTableComponent = ({
               <EditIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+         
         </Box>
       )}
-      renderTopToolbarCustomActions={({ table }) => (
-        <Button
-          variant="contained"
-          onClick={() => table.setCreatingRow(true)}
-        >
-          Create New User
-        </Button>
-      )}
+     
       state={{
         isLoading: isLoadingUsers,
         isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,

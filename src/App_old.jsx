@@ -14,10 +14,13 @@ import {
 } from '@tanstack/react-query';
 import { fakeData, usStates } from './makeData';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import FileIcon from '@mui/icons-material/FileDownload'
+import { mkConfig, generateCsv, download } from 'export-to-csv';
 
 const Example = () => {
   const [validationErrors, setValidationErrors] = useState({});
+
+  const [clickedRow, setClickedRow] = useState(null);
 
   const columns = useMemo(
     () => [
@@ -85,9 +88,56 @@ const Example = () => {
           helperText: validationErrors?.state,
         },
       },
+      {
+        accessorKey:'actions',
+        header: 'Actions',
+        Cell:(rowData) => {
+        
+          console.log('rowData', rowData)
+
+          const active = clickedRow && rowData.table
+
+          return  <Box sx={{ display: 'flex', gap: '1rem' }}>
+          <Tooltip title="Button1">
+            <IconButton onClick={() => table.setEditingRow(rowData)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="BUtton2">
+            <IconButton onClick={() => setClickedRow(rowData)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Button3">
+            <IconButton onClick={() => table.setEditingRow(rowData)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+  
+        </Box>
+        },
+      }
     ],
     [validationErrors],
   );
+
+  const csvConfig = mkConfig({
+    fieldSeparator:',',
+    decimalSeparator:'.',
+    useKeysAsHeaders: true,
+  });
+
+  const handleExportRows = (rows) => {
+    const rowData = rows.map(row => row.original);
+
+    const csv = generateCsv(csvConfig)(rowData);
+
+    download(csvConfig)(csv);
+  }
+
+
 
   //call CREATE hook
   const { mutateAsync: createUser, isPending: isCreatingUser } =
@@ -159,6 +209,10 @@ const Example = () => {
     onCreatingRowSave: handleCreateUser,
     onEditingRowCancel: () => setValidationErrors({}),
     onEditingRowSave: handleSaveUser,
+    
+
+    
+    
     renderRowActions: ({ row, table }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Edit">
@@ -166,14 +220,24 @@ const Example = () => {
             <EditIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-            <DeleteIcon />
+        <Tooltip title="Share">
+          <IconButton onClick={() => handleExportRows([row])}>
+            <FileIcon />
           </IconButton>
         </Tooltip>
+
+
       </Box>
-    ),
+    ), 
+    
+    
+    
     renderTopToolbarCustomActions: ({ table }) => (
+      <Box sx={{
+        display: 'flex',
+        gap:'10px',
+        padding: '8px',
+        flexWrap:'wrap',      }}>
       <Button
         variant="contained"
         onClick={() => {
@@ -188,6 +252,16 @@ const Example = () => {
       >
         Create New User
       </Button>
+
+
+      <Button disabled={table.getPrePaginationRowModel().rows.length === 0}
+      onClick={() => {handleExportRows(table.getPrePaginationRowModel().rows)}}>
+        Export all rows
+        
+      </Button>
+      </Box>
+
+
     ),
     state: {
       isLoading: isLoadingUsers,
@@ -197,7 +271,7 @@ const Example = () => {
     },
   });
 
-  return <MaterialReactTable table={table} />;
+  return <MaterialReactTable table={table}/>;
 };
 
 //CREATE hook (post new user to api)
@@ -242,6 +316,8 @@ function useUpdateUser() {
   return useMutation({
     mutationFn: async (user) => {
       //send api update request here
+
+      //fetch("",{})
       await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
       return Promise.resolve();
     },
