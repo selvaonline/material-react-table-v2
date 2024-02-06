@@ -5,7 +5,7 @@ const fakeData = [
     firstName: "Kelvin",
     lastName: "Langosh",
     email: "Jerod14@hotmail.com",
-    state: "Ohio",
+    state: "Texas",
   },
   {
     id: "08m6rx",

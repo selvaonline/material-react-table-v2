@@ -87,6 +87,18 @@ const Example = () => {
           error: !!validationErrors?.state,
           helperText: validationErrors?.state,
         },
+        Cell: ({ cell }) => (
+          <Box
+            sx={{
+              bgcolor: cell.getValue() === 'Texas' ? 'green' : 'inherit', // Change to 'Texas'
+              color: cell.getValue() === 'Texas' ? 'white' : 'inherit', // Ensuring text color contrast
+              padding: '8px',
+              borderRadius: '4px',
+            }}
+          >
+            {cell.getValue()}
+          </Box>
+        ),
       },
       {
         accessorKey:'actions',
@@ -95,7 +107,7 @@ const Example = () => {
         
           console.log('rowData', rowData)
 
-          const active = clickedRow && rowData.table
+          const active = clickedRow && rowData
 
           return  <Box sx={{ display: 'flex', gap: '1rem' }}>
           <Tooltip title="Button1">
