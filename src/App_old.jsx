@@ -5,6 +5,8 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import { Box, Button, IconButton, Tooltip } from '@mui/material';
+import ShimmerEffect from './ShimmerEffect'; // Adjust the path as necessary
+
 import {
   QueryClient,
   QueryClientProvider,
@@ -267,6 +269,8 @@ const Example = () => {
 
 
       <Button disabled={table.getPrePaginationRowModel().rows.length === 0}
+      variant = "contained"
+      color="primary"
       onClick={() => {handleExportRows(table.getPrePaginationRowModel().rows)}}>
         Export all rows
         
